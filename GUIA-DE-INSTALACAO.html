@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="pt-BR">
+  <meta charset="UTF-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Santo Corte — Guia de instalação</title
+  ><style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #eef0eb;
+      color: #20251e;
+      font:
+        16px/1.7 system-ui,
+        Arial,
+        sans-serif;
+    }
+    main {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 45px 60px 80px;
+    }
+    header {
+      background: #172018;
+      color: #f4f0e7;
+      padding: 36px;
+      margin: -45px -60px 45px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.2;
+    }
+    .kicker {
+      color: #ddb38a;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+    h2 {
+      font-size: 24px;
+      line-height: 1.3;
+      border-top: 1px solid #d5ddd0;
+      padding-top: 30px;
+      margin-top: 38px;
+    }
+    p {
+      margin: 13px 0;
+    }
+    code {
+      background: #edf0e9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+    pre {
+      padding: 20px;
+      background: #172018;
+      color: #e9efdd;
+      overflow: auto;
+      border-radius: 6px;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      overflow-wrap: normal;
+    }
+    .table-wrap {
+      overflow: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+      margin: 20px 0;
+    }
+    td,
+    th {
+      border: 1px solid #d1dbca;
+      text-align: left;
+      padding: 12px;
+      vertical-align: top;
+    }
+    th {
+      background: #eaf0e3;
+    }
+    .item {
+      padding-left: 28px;
+      position: relative;
+    }
+    .item > span {
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+      color: #8b623e;
+    }
+    @media (max-width: 650px) {
+      main {
+        padding: 25px 20px;
+      }
+      header {
+        margin: -25px -20px 30px;
+        padding: 25px 20px;
+      }
+      h1 {
+        font-size: 29px;
+      }
+      h2 {
+        font-size: 22px;
+      }
+    }
+    @media print {
+      body {
+        background: white;
+      }
+      main {
+        max-width: none;
+        padding: 0;
+      }
+      header {
+        margin: 0 0 25px;
+        color: black;
+        background: white;
+        padding: 0;
+      }
+      h2 {
+        break-after: avoid;
+      }
+      pre {
+        white-space: pre-wrap;
+        border: 1px solid #bbb;
+        color: black;
+        background: white;
+      }
+      tr {
+        break-inside: avoid;
+      }
+    }
+  </style>
+  <main>
+    <header>
+      <p class="kicker">GUIA PRÁTICO • SUPABASE + NETLIFY</p>
+      <h1>Santo Corte — instalação do zero</h1>
+    </header>
+    <p>
+      Este guia acompanha todos os arquivos do sistema para publicar na sua
+      conta da Netlify, usando Supabase e login Google. Não use o endereço
+      antigo da prévia para configurar esta instalação.
+    </p>
+    <h2>1. O que você precisa</h2>
+    <p class="item"><span>•</span> Conta no GitHub para guardar os arquivos.</p>
+    <p class="item"><span>•</span> Conta na Netlify para publicar o site.</p>
+    <p class="item">
+      <span>•</span> Conta no Supabase para banco e autenticação.
+    </p>
+    <p class="item">
+      <span>•</span> Acesso ao Google Cloud para configurar “Entrar com Google”.
+    </p>
+    <p class="item">
+      <span>•</span> Node.js 22 ou posterior e VS Code no computador.
+    </p>
+    <p>
+      URLs: https://github.com • https://app.netlify.com •
+      https://supabase.com/dashboard • https://console.cloud.google.com
+    </p>
+    <p>
+      As contas e o domínio podem ficar no nome da barbearia, com você como
+      colaborador, para facilitar a entrega comercial. Serviços externos possuem
+      limites e cobranças próprios; confira o plano escolhido nas respectivas
+      contas.
+    </p>
+    <h2>2. Preparar os arquivos no computador</h2>
+    <p class="item"><span>1.</span> Extraia o ZIP.</p>
+    <p class="item">
+      <span>2.</span> Abra a pasta <code>santo-corte-supabase</code> no VS Code.
+      Ela deve conter <code>package.json</code>, <code>netlify.toml</code>,
+      <code>app</code> e <code>supabase</code>.
+    </p>
+    <p class="item"><span>3.</span> No terminal dessa pasta, execute:</p>
+    <pre><code>npm ci</code></pre>
+    <p class="item">
+      <span>4.</span> Para gerar as chaves dos avisos, execute uma única vez:
+    </p>
+    <pre><code>npm run vapid:generate</code></pre>
+    <p>
+      Será criado <code>.env.vapid</code>. Guarde essas chaves. Trocar a chave
+      depois exige reativar as notificações em todos os celulares. O arquivo
+      está excluído do Git; não publique a chave privada.
+    </p>
+    <h2>3. Criar o projeto no Supabase</h2>
+    <p class="item">
+      <span>1.</span> No painel do Supabase, crie um novo projeto. Escolha uma
+      região adequada ao público brasileiro e guarde a senha do banco.
+    </p>
+    <p class="item"><span>2.</span> Aguarde o projeto ficar disponível.</p>
+    <p class="item">
+      <span>3.</span> Abra <strong>SQL Editor → New query</strong>.
+    </p>
+    <p class="item">
+      <span>4.</span> Copie todo o conteúdo de
+      <code>supabase/01-schema.sql</code> e execute. Use um projeto novo: esse
+      arquivo cria tabelas, permissões e funções e deve ser executado uma vez.
+    </p>
+    <p class="item">
+      <span>5.</span> Em outra consulta, copie
+      <code>supabase/02-servicos.sql</code> e execute. Este arquivo pode ser
+      repetido sem sobrescrever alterações dos serviços.
+    </p>
+    <p class="item">
+      <span>6.</span> Em <strong>Connect</strong> ou nas configurações de API,
+      copie a URL do projeto e a chave <strong>Publishable</strong> (ou a chave
+      pública <code>anon</code>, se esse for o formato disponibilizado).
+    </p>
+    <p class="item">
+      <span>7.</span> Copie também a chave secreta de servidor
+      <strong>secret key</strong> ou <strong>service_role</strong>. Ela será
+      usada somente pelo servidor para enviar notificações. Nunca use essa chave
+      em uma variável que comece com <code>NEXT_PUBLIC_</code>.
+    </p>
+    <p>
+      Não desligue RLS. As permissões e funções já foram preparadas para separar
+      administrador, barbeiros e clientes. Não conceda acesso público às tabelas
+      de agendamentos ou dispositivos.
+    </p>
+    <h2>4. Subir para o GitHub e criar o site na Netlify</h2>
+    <p>Crie um repositório vazio no GitHub. No terminal da pasta do projeto:</p>
+    <pre><code>git init
+git add .
+git commit -m &quot;Sistema Santo Corte&quot;
+git branch -M main
+git remote add origin https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
+git push -u origin main</code></pre>
+    <p>
+      Se o VS Code solicitar autenticação, entre na sua conta do GitHub. Os
+      arquivos <code>.env</code> com valores reais não devem ser incluídos no
+      commit.
+    </p>
+    <p>Na Netlify:</p>
+    <p class="item">
+      <span>1.</span> Escolha adicionar/importar projeto a partir do GitHub.
+    </p>
+    <p class="item"><span>2.</span> Selecione o repositório criado.</p>
+    <p class="item">
+      <span>3.</span> Use a pasta do projeto como base. Se os arquivos estão na
+      raiz do repositório, deixe Base directory vazio.
+    </p>
+    <p class="item">
+      <span>4.</span> O <code>netlify.toml</code> já define
+      <strong>Build command: <code>npm run build</code></strong
+      >, <strong>Publish directory: <code>.next</code></strong> e Node 22.
+    </p>
+    <p class="item">
+      <span>5.</span> A Netlify deve detectar Next.js. Não publique a pasta como
+      HTML estático e não use o antigo ZIP da prévia.
+    </p>
+    <p class="item">
+      <span>6.</span> Escolha o nome/endereço final do site, por exemplo
+      <code>santo-corte-exemplo.netlify.app</code>.
+    </p>
+    <p>
+      O primeiro deploy pode exibir mensagens de configuração pendente. Isso é
+      esperado antes de conectar Supabase e Google.
+    </p>
+    <h2>5. Variáveis de ambiente na Netlify</h2>
+    <p>
+      Nas configurações do projeto, abra
+      <strong>Environment variables</strong> e adicione:
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>NEXT_PUBLIC_SITE_URL</code></td>
+            <td>
+              URL final do site, como
+              <code>https://santo-corte-exemplo.netlify.app</code>, sem barra no
+              final
+            </td>
+          </tr>
+          <tr>
+            <td><code>NEXT_PUBLIC_SUPABASE_URL</code></td>
+            <td>URL do projeto Supabase</td>
+          </tr>
+          <tr>
+            <td><code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code></td>
+            <td>Chave pública Publishable/anon do Supabase</td>
+          </tr>
+          <tr>
+            <td><code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+            <td>Chave secreta de servidor secret/service_role do Supabase</td>
+          </tr>
+          <tr>
+            <td><code>NEXT_PUBLIC_VAPID_PUBLIC_KEY</code></td>
+            <td>Chave pública gerada em <code>.env.vapid</code></td>
+          </tr>
+          <tr>
+            <td><code>VAPID_PRIVATE_KEY</code></td>
+            <td>Chave privada gerada em <code>.env.vapid</code></td>
+          </tr>
+          <tr>
+            <td><code>VAPID_SUBJECT</code></td>
+            <td><code>mailto:SEU_EMAIL_REAL</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Garanta que as variáveis estejam disponíveis no build e nas Functions
+      conforme necessário. As três variáveis privadas — service role, VAPID
+      private e subject — são lidas pelo servidor. As variáveis
+      <code>NEXT_PUBLIC_</code> são incorporadas no build do navegador; alterar
+      esses valores exige novo deploy.
+    </p>
+    <p>
+      Após salvar, faça novo deploy. Não coloque aspas em volta dos valores no
+      painel. Não compartilhe prints contendo chaves secretas.
+    </p>
+    <h2>6. Configurar o Google</h2>
+    <p>No Google Cloud / Google Auth Platform:</p>
+    <p class="item"><span>1.</span> Crie ou selecione um projeto.</p>
+    <p class="item">
+      <span>2.</span> Configure nome da aplicação, e-mail de suporte e público
+      da tela de consentimento.
+    </p>
+    <p class="item">
+      <span>3.</span> Use somente os escopos de identificação:
+      <code>openid</code>, e-mail e perfil. Não é necessário pedir acesso ao
+      Gmail ou Google Calendar.
+    </p>
+    <p class="item">
+      <span>4.</span> Crie um <strong>OAuth Client ID</strong> do tipo
+      <strong>Web application</strong>.
+    </p>
+    <p class="item">
+      <span>5.</span> Em <strong>Authorized JavaScript origins</strong>,
+      adicione a URL final da Netlify (ou seu domínio).
+    </p>
+    <p class="item">
+      <span>6.</span> Em <strong>Authorized redirect URIs</strong>, adicione
+      exatamente a URL de callback exibida em
+      <strong>Supabase → Authentication → Sign In / Providers → Google</strong>.
+      Geralmente é:
+    </p>
+    <pre><code>https://SEU-PROJETO.supabase.co/auth/v1/callback</code></pre>
+    <p class="item">
+      <span>7.</span> Copie o Client ID e Client Secret para a configuração do
+      provedor Google no Supabase e ative-o. O segredo do Google fica no
+      Supabase; não precisa ir ao código.
+    </p>
+    <p class="item">
+      <span>8.</span> Enquanto o aplicativo estiver em modo de teste no Google,
+      cadastre os e-mails de teste. Para aceitar clientes em geral, ajuste o
+      público/publicação conforme a orientação do Google.
+    </p>
+    <p>No <strong>Supabase → Authentication → URL Configuration</strong>:</p>
+    <p class="item">
+      <span>•</span> <strong>Site URL:</strong> URL final da Netlify.
+    </p>
+    <p class="item">
+      <span>•</span> <strong>Redirect URLs:</strong> adicione
+      <code>https://SEU-SITE.netlify.app/auth/callback**</code> (permite o
+      parâmetro interno <code>next</code>). Em produção mantenha a origem exata;
+      não autorize domínios genéricos.
+    </p>
+    <p class="item">
+      <span>•</span> Para desenvolvimento, adicione separadamente
+      <code>http://localhost:3000/auth/callback**</code>.
+    </p>
+    <p>
+      O callback do Google é o endereço do <strong>Supabase</strong>. O callback
+      de retorno do aplicativo é o endereço
+      <strong>/auth/callback do seu site</strong>. São dois endereços distintos.
+    </p>
+    <h2>7. Criar o administrador</h2>
+    <p class="item">
+      <span>1.</span> Abra <code>https://SEU-SITE.netlify.app/entrar</code>.
+    </p>
+    <p class="item">
+      <span>2.</span> Entre com a conta Google que será a administradora.
+    </p>
+    <p class="item">
+      <span>3.</span> No arquivo <code>supabase/03-administrador.sql</code>,
+      substitua <code>SEU_EMAIL_GOOGLE</code> pelo mesmo e-mail.
+    </p>
+    <p class="item">
+      <span>4.</span> Execute esse arquivo no SQL Editor do Supabase.
+    </p>
+    <p class="item">
+      <span>5.</span> Acesse <code>/painel</code> ou atualize a página. As abas
+      <strong>Agenda</strong>, <strong>Serviços</strong> e
+      <strong>Equipe</strong> aparecerão.
+    </p>
+    <p>
+      Não existe senha padrão ou cadastro público de administrador. Para
+      promover outro administrador, repita esse procedimento com uma conta que
+      já tenha entrado no site. Para remover um administrador, remova somente a
+      linha correspondente de <code>admin_users</code> pelo painel do Supabase.
+    </p>
+    <h2>8. Cadastrar os barbeiros e revisar o catálogo</h2>
+    <p>No painel → <strong>Equipe → Novo profissional</strong>:</p>
+    <p class="item"><span>•</span> Nome real.</p>
+    <p class="item"><span>•</span> E-mail da conta Google que ele usará.</p>
+    <p class="item"><span>•</span> Serviços atendidos.</p>
+    <p class="item"><span>•</span> Dias e horários de trabalho.</p>
+    <p class="item"><span>•</span> Profissional ativo.</p>
+    <p>
+      Peça ao barbeiro para entrar em <code>/painel</code> com esse e-mail. O
+      sistema associa a conta e mostra somente sua agenda. Se você alterar o
+      e-mail, o acesso passa para a nova conta confirmada.
+    </p>
+    <p>
+      Em <strong>Serviços</strong>, confira preço e duração. O catálogo inicial
+      contém:
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Serviço</th>
+            <th>Duração</th>
+            <th>Preço</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Corte</td>
+            <td>30 min</td>
+            <td>Sob consulta</td>
+          </tr>
+          <tr>
+            <td>Corte + Barba</td>
+            <td>60 min</td>
+            <td>A partir de R$ 80</td>
+          </tr>
+          <tr>
+            <td>Barba</td>
+            <td>30 min</td>
+            <td>Sob consulta</td>
+          </tr>
+          <tr>
+            <td>2 Cortes</td>
+            <td>60 min</td>
+            <td>A partir de R$ 80</td>
+          </tr>
+          <tr>
+            <td>Escova Progressiva</td>
+            <td>90 min</td>
+            <td>A partir de R$ 100</td>
+          </tr>
+          <tr>
+            <td>Corte + Barba + S...</td>
+            <td>60 min</td>
+            <td>A partir de R$ 100 — desativado até confirmar o nome</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Os horários são oferecidos em intervalos de 15 minutos, respeitando a
+      duração inteira do serviço e o expediente. Para almoço, folga, férias ou
+      compromissos, use
+      <strong>Agenda → Adicionar à agenda → Bloqueio / intervalo</strong>. Um
+      bloqueio corresponde a um intervalo de um dia; repita em outras datas
+      quando necessário.
+    </p>
+    <h2>9. Avisos no celular do barbeiro</h2>
+    <p>
+      <strong>Android:</strong> abra o site no Chrome, entre no painel com a
+      conta do barbeiro e use o menu <strong>Instalar app</strong> ou
+      <strong>Adicionar à tela inicial</strong>, se disponível.
+    </p>
+    <p>
+      <strong>iPhone (iOS 16.4 ou superior):</strong> abra no Safari →
+      Compartilhar → <strong>Adicionar à Tela de Início</strong>. Abra pelo
+      ícone instalado e entre no painel.
+    </p>
+    <p>Em cada aparelho:</p>
+    <p class="item">
+      <span>1.</span> Toque em <strong>Ativar avisos neste celular</strong>.
+    </p>
+    <p class="item">
+      <span>2.</span> Permita as notificações solicitadas pelo sistema.
+    </p>
+    <p class="item">
+      <span>3.</span> Toque em <strong>Testar aviso</strong>. O teste é limitado
+      a um por minuto para evitar repetições.
+    </p>
+    <p class="item">
+      <span>4.</span> Confira se o telefone exibiu a notificação e se o som está
+      habilitado nas configurações.
+    </p>
+    <p class="item">
+      <span>5.</span> Se quiser alerta com o painel aberto, toque em
+      <strong>Ativar som do painel</strong>. O navegador exige esse toque para
+      liberar áudio.
+    </p>
+    <p>
+      O aplicativo não consegue tocar por cima do silencioso, Não Perturbe ou
+      restrições do sistema. Economia de bateria, conexão e configurações do
+      navegador podem atrasar os avisos. A notificação em segundo plano usa o
+      som padrão permitido pelo telefone; um toque personalizado não é
+      garantido.
+    </p>
+    <p>
+      O som do painel depende da página aberta. O Web Push pode chegar com a
+      página fechada nos aparelhos compatíveis. Fechar à força o navegador,
+      revogar permissões ou remover o app pode interromper a entrega.
+    </p>
+    <p>
+      <strong>Mantenha o barbeiro conectado no aparelho:</strong> “Sair da
+      conta” também desativa os avisos nesse dispositivo. Depois de entrar
+      novamente, reative-os. Isso evita expor avisos em aparelhos
+      compartilhados.
+    </p>
+    <h2>10. Conferir a fila de notificações</h2>
+    <p>
+      Na Netlify, abra <strong>Functions</strong> e confirme a função
+      <code>push-dispatch</code> com indicação <strong>Scheduled</strong>. Ela
+      tenta processar a fila a cada minuto. Use <strong>Run now</strong> para um
+      teste manual, se necessário.
+    </p>
+    <p>
+      A primeira tentativa também ocorre ao confirmar a reserva. Se o provedor
+      não responder, a reserva continua salva e a fila tenta novamente. As
+      tentativas seguintes usam espera progressiva, até seis tentativas. As
+      funções agendadas só rodam automaticamente no deploy de produção, não em
+      previews de branches.
+    </p>
+    <p>No Supabase:</p>
+    <p class="item">
+      <span>•</span> <code>push_subscriptions</code>: dispositivos que ativaram
+      os avisos.
+    </p>
+    <p class="item">
+      <span>•</span> <code>push_jobs</code>: avisos, com estados
+      <code>pending</code>, <code>sending</code>, <code>sent</code> ou
+      <code>failed</code>.
+    </p>
+    <p class="item">
+      <span>•</span> <code>sent</code>: o provedor aceitou o envio; não é
+      confirmação de que houve som no aparelho.
+    </p>
+    <p class="item">
+      <span>•</span> <code>failed</code>: esgotou tentativas. Confira logs,
+      chaves e permissões. Depois de corrigir a causa, um administrador técnico
+      pode recolocar o aviso na fila pelo SQL Editor; isso poderá gerar um aviso
+      repetido.
+    </p>
+    <p>
+      Em falhas de conexão, um aviso pode se repetir; o sistema usa uma chave
+      por confirmação para evitar duplicar a reserva ao repetir a mesma
+      solicitação.
+    </p>
+    <p>
+      Não exponha essas tabelas publicamente. O painel informa a quantidade de
+      avisos pendentes/falhos dos dispositivos da própria conta.
+    </p>
+    <h2>11. Testar antes de usar com clientes</h2>
+    <p class="item">
+      <span>1.</span> Entre como cliente em uma conta Google diferente da conta
+      administradora.
+    </p>
+    <p class="item">
+      <span>2.</span> Escolha serviço, profissional, data e horário e confirme.
+    </p>
+    <p class="item"><span>3.</span> Confira “Meus agendamentos”.</p>
+    <p class="item">
+      <span>4.</span> Confira se o horário apareceu na agenda do barbeiro
+      correto.
+    </p>
+    <p class="item">
+      <span>5.</span> Feche o painel no celular e faça outra reserva pelo
+      computador para testar o push real.
+    </p>
+    <p class="item">
+      <span>6.</span> Tente reservar o mesmo intervalo em dois navegadores:
+      apenas uma reserva deve ser aceita.
+    </p>
+    <p class="item">
+      <span>7.</span> Cancele uma reserva e confira se o horário ficou
+      disponível.
+    </p>
+    <p class="item">
+      <span>8.</span> Entre como outro barbeiro: ele não deve ver a agenda
+      alheia.
+    </p>
+    <p class="item">
+      <span>9.</span> Teste um serviço de 60/90 minutos perto do fim do
+      expediente.
+    </p>
+    <p class="item">
+      <span>10.</span> Verifique os nomes, preços, contatos, endereço, foto e
+      identidade da barbearia antes de divulgar.
+    </p>
+    <p>
+      O sistema está preparado para substituir a agenda do Trinks, mas não
+      importa automaticamente os compromissos que já existem lá. Antes da troca,
+      registre os horários futuros ou bloqueie-os aqui. Não mantenha duas
+      agendas independentes aceitando reservas sem sincronização.
+    </p>
+    <h2>12. Usar localmente</h2>
+    <p>
+      Copie <code>.env.example</code> para <code>.env.local</code>, preencha os
+      valores reais e use
+      <code>NEXT_PUBLIC_SITE_URL=http://localhost:3000</code>. Mantenha as URLs
+      locais autorizadas no Supabase e no Google quando aplicável.
+    </p>
+    <pre><code>npm run dev</code></pre>
+    <p>
+      Abra http://localhost:3000. As funções agendadas da Netlify não disparam
+      nesse modo; a primeira tentativa de push continua sendo executada pelo
+      servidor ao confirmar reservas, desde que as chaves estejam configuradas.
+    </p>
+    <p>Para verificar o projeto:</p>
+    <pre><code>npm run typecheck
+npm test
+npm run build</code></pre>
+    <h2>13. Resolver problemas comuns</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Problema</th>
+            <th>Conferência</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Google retorna erro de redirect</td>
+            <td>
+              Compare exatamente callback do Supabase no Google e callback do
+              site na lista do Supabase
+            </td>
+          </tr>
+          <tr>
+            <td>Login funciona, painel não abre</td>
+            <td>
+              Faça o cadastro de administrador via SQL ou confira o e-mail do
+              barbeiro
+            </td>
+          </tr>
+          <tr>
+            <td>Catálogo vazio</td>
+            <td>Execute <code>02-servicos.sql</code> no projeto correto</td>
+          </tr>
+          <tr>
+            <td>Sem horários</td>
+            <td>
+              Confira serviços do barbeiro, expediente, data, duração e
+              bloqueios
+            </td>
+          </tr>
+          <tr>
+            <td>Erro “Origem inválida”</td>
+            <td>
+              <code>NEXT_PUBLIC_SITE_URL</code> precisa ser a URL pela qual você
+              abriu o site; refaça deploy após alteração
+            </td>
+          </tr>
+          <tr>
+            <td>Reserva salva, celular não avisa</td>
+            <td>
+              Teste permissão, app instalado no iPhone, VAPID, chave de servidor
+              e função agendada
+            </td>
+          </tr>
+          <tr>
+            <td>Push falha após troca de chaves</td>
+            <td>Reative notificações nos aparelhos com as novas chaves</td>
+          </tr>
+          <tr>
+            <td>Netlify exibe página estática/404</td>
+            <td>
+              Publique pelo repositório com build Next.js, não por arrastar
+              arquivos HTML
+            </td>
+          </tr>
+          <tr>
+            <td>Banco informa que tabela já existe</td>
+            <td>
+              Não reexecute <code>01-schema.sql</code> em um projeto já
+              configurado; use migrações para mudanças futuras
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h2>14. Entrega ao dono da barbearia</h2>
+    <p>
+      Entregue acesso às contas, domínio, repositório e instruções para
+      administrar a agenda. Combine quem cuidará de suporte, custos de
+      hospedagem, backups e mudanças de preços. Não prometa que notificações
+      tocarão em 100% dos aparelhos: demonstre e teste nos celulares reais da
+      equipe.
+    </p>
+    <h2>Referências oficiais</h2>
+    <p class="item">
+      <span>•</span> Supabase Google:
+      https://supabase.com/docs/guides/auth/social-login/auth-google
+    </p>
+    <p class="item">
+      <span>•</span> Supabase SSR:
+      https://supabase.com/docs/guides/auth/server-side/creating-a-client
+    </p>
+    <p class="item">
+      <span>•</span> Netlify Next.js:
+      https://docs.netlify.com/build/frameworks/framework-setup-guides/nextjs/overview/
+    </p>
+    <p class="item">
+      <span>•</span> Netlify funções agendadas:
+      https://docs.netlify.com/build/functions/scheduled-functions/
+    </p>
+    <p class="item">
+      <span>•</span> Apple Web Push:
+      https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/
+    </p>
+  </main>
+</html>
