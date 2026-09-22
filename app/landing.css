@@ -781,7 +781,7 @@ footer {
 }
 
 /* Display the original artwork, trimming only its empty outer space via CSS. */
-.official-logo { display: block; position: relative; width: 164px; aspect-ratio: 1.65; overflow: hidden; flex-shrink: 0; background: #000; }
+.official-logo { display: block; position: relative; width: 164px; aspect-ratio: 1.65; overflow: hidden; flex-shrink: 0; background: transparent; }
 .official-logo img { position: absolute; display: block; width: 137.44%; max-width: none; height: auto; left: -18.48%; top: -35.8%; }
 .header, .sys-header, footer { background: #000; }
 .header { height: 122px; }
