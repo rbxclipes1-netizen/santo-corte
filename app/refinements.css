@@ -1,0 +1,497 @@
+/* Ajustes incrementais: mesma identidade, fluxo e hierarquia da Santo Corte. */
+:root {
+  color-scheme: dark;
+}
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+input:focus-visible,
+[role="radio"]:focus-visible {
+  outline: 2px solid #ffd000;
+  outline-offset: 4px;
+}
+.barber-photo {
+  display: inline-flex;
+  position: relative;
+  width: 68px;
+  height: 68px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #ffffff26;
+  border-radius: 50%;
+  background: #2b2b2b;
+  color: #ffd000;
+  font: 600 25px var(--display);
+}
+.barber-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+}
+.barber-photo-large {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(140deg, #303030, #141414);
+  font-size: 70px;
+}
+.team-section {
+  border-top: 1px solid var(--line);
+}
+.team-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 35px;
+  margin-bottom: 38px;
+}
+.team-heading > p {
+  color: #bdbdbd;
+  max-width: 360px;
+}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.team-card {
+  min-width: 0;
+  background: #202020;
+  border: 1px solid #363636;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.team-card-copy {
+  padding: 25px;
+}
+.team-kicker {
+  font-size: 10px;
+  letter-spacing: 1.7px;
+  color: #ffd000;
+}
+.team-card h3 {
+  font: 600 31px var(--display);
+  line-height: 1.15;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.team-card p {
+  color: #bababa;
+  font-size: 14px;
+  min-height: 48px;
+  margin-bottom: 22px;
+}
+.team-card .text-link {
+  gap: 12px;
+  line-height: 1.6;
+  flex-wrap: wrap;
+}
+.team-feedback {
+  padding: 24px;
+  background: #202020;
+  border: 1px solid #363636;
+  color: #bdbdbd;
+}
+.team-feedback a {
+  color: #ffd000;
+  text-decoration: underline;
+}
+.mobile-quick-nav {
+  display: none;
+}
+.professional-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.professional-option {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 18px;
+  background: #202020;
+  border: 1px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 0;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.professional-option:hover {
+  border-color: #aaa;
+}
+.professional-option.selected {
+  border-color: #ffd000;
+  background: #29271d;
+  box-shadow: inset 0 0 0 1px #ffd000;
+}
+.professional-option-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  font-weight: 600;
+}
+.professional-option-name small {
+  display: block;
+  font-size: 11px;
+  color: #bdbdbd;
+  margin-top: 5px;
+  font-weight: 400;
+}
+.professional-option.selected small {
+  color: #ffd000;
+}
+.professional-option [role="radio"] {
+  flex-shrink: 0;
+}
+.selected-professional,
+.review-professional {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #414141;
+}
+.selected-professional div {
+  flex: 1;
+  min-width: 0;
+}
+.selected-professional small,
+.selected-professional strong,
+.review-professional strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.selected-professional small,
+.review-professional {
+  font-size: 13px;
+  color: #bdbdbd;
+}
+.selected-professional strong,
+.review-professional strong {
+  font-size: 16px;
+  color: #f1f1f1;
+}
+.summary-professional {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: end;
+}
+.summary-professional .barber-photo {
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
+.barber-fields {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.photo-editor {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  padding: 22px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  margin-bottom: 28px;
+  background: #1b1b1b;
+}
+.photo-editor .barber-photo {
+  width: 108px;
+  height: 108px;
+}
+.photo-editor-controls {
+  flex: 1;
+  min-width: 0;
+}
+.photo-editor .field-label {
+  margin-top: 0;
+}
+.optional-label {
+  color: #a5a5a5;
+  font-weight: 400;
+  font-size: 12px;
+}
+.photo-editor p {
+  font-size: 13px;
+  color: #bbb;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+.photo-editor input[type="file"] {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 0;
+  height: auto;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+}
+.photo-editor input::file-selector-button {
+  background: #ffd000;
+  border: 0;
+  padding: 10px 14px;
+  margin-right: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #151515;
+  font-weight: 600;
+}
+.photo-file-name {
+  overflow-wrap: anywhere;
+}
+.photo-editor .photo-error {
+  color: #ffc7ba;
+}
+.system input:not([type="checkbox"]):not([type="file"]) {
+  min-height: 46px;
+}
+.service-card,
+.summary,
+.review-card,
+.editor,
+.stats > div,
+.appointment,
+.admin-service-grid > article,
+.push-panel {
+  border-radius: 8px;
+}
+.service-card {
+  position: relative;
+}
+.service-card.selected {
+  box-shadow: inset 0 0 0 1px #ffd000;
+}
+.slot {
+  min-height: 48px;
+  border-radius: 5px;
+}
+.slot.selected {
+  background: #ffd000;
+  color: #151515;
+  font-weight: 600;
+}
+.slot.selected [role="radio"] {
+  border-color: #151515;
+  color: #151515;
+}
+.progress-steps .current {
+  color: #ffd000;
+}
+.booking-main h2[tabindex] {
+  scroll-margin-top: 24px;
+}
+.booking-main h2[tabindex]:focus {
+  outline: none;
+}
+.system .notice {
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+.system .badge {
+  letter-spacing: 0.2px;
+}
+.badge.confirmed {
+  background: #243b28;
+  color: #c8e9cb;
+}
+.badge.completed {
+  background: #23373e;
+  color: #c7e6f1;
+}
+.badge.cancelled {
+  background: #402a26;
+  color: #efc6bc;
+}
+@media (max-width: 1000px) {
+  .team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .professional-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .mobile-quick-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 4%;
+    background: #161616;
+    border-bottom: 1px solid #383838;
+  }
+  .mobile-quick-nav a {
+    font-size: 12px;
+    padding: 7px 3px;
+  }
+  .mobile-quick-nav a:nth-child(2) {
+    color: #ffd000;
+  }
+}
+@media (max-width: 680px) {
+  .team-heading {
+    display: block;
+  }
+  .team-heading > p {
+    margin-top: 22px;
+  }
+  .team-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .team-card {
+    max-width: 480px;
+    width: 100%;
+    margin: auto;
+  }
+  .professional-option {
+    padding: 14px;
+  }
+  .professional-option .barber-photo {
+    width: 60px;
+    height: 60px;
+  }
+  .selected-professional {
+    flex-wrap: wrap;
+  }
+  .photo-editor {
+    flex-direction: column;
+    padding: 17px;
+  }
+  .photo-editor-controls {
+    width: 100%;
+  }
+  .progress-steps {
+    gap: 6px;
+  }
+  .progress-steps li {
+    flex: 1;
+    max-width: none;
+  }
+  .admin-tabs {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+  .admin-tabs button {
+    flex-shrink: 0;
+  }
+  .summary {
+    margin-top: 24px;
+  }
+  .sys-header .action-row {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .sys-header .quiet-link {
+    text-align: right;
+  }
+  .shift-list > div {
+    grid-template-columns: 84px minmax(0, 1fr) 20px minmax(0, 1fr);
+  }
+  .shift-list input {
+    width: 100%;
+    min-width: 0;
+  }
+  .system .notice {
+    gap: 10px;
+  }
+  .system .notice button {
+    margin-left: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .professional-option {
+    transition: none;
+  }
+}
+/* Textos longos também precisam caber quando a fonte externa não estiver disponível. */
+.landing h1,
+.landing h2 {
+  overflow-wrap: anywhere;
+}
+.team-card {
+  display: flex;
+  flex-direction: column;
+}
+.team-card-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.team-card-copy .text-link {
+  margin-top: auto;
+}
+.summary-price dd {
+  color: #ffd000;
+}
+@media (max-width: 380px) {
+  .reputation {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .closing h2 {
+    font-size: 44px;
+  }
+  .landing .button {
+    max-width: 100%;
+    gap: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: 12px;
+  }
+  .header .button {
+    font-size: 10px;
+    padding: 11px 12px;
+    gap: 10px;
+  }
+  .team-card-copy {
+    padding: 20px;
+  }
+}
+.system .photo-editor input.photo-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 1px;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+}
+.photo-pick {
+  margin: 8px 10px 8px 0;
+  border-radius: 4px;
+}
+.system h1 {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 380px) {
+  .system h1 {
+    font-size: 40px;
+  }
+}
+
+.photo-editor {
+  position: relative;
+}

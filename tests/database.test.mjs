@@ -30,6 +30,16 @@ try {
   );
   await db.exec(readFileSync(new URL("01-schema.sql", base), "utf8"));
   await db.exec(readFileSync(new URL("02-servicos.sql", base), "utf8"));
+  // Storage tables are supplied by Supabase in production. Mock only its schema for PostgreSQL policy tests.
+  await db.exec(`create schema storage;
+    create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+    create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);
+    alter table storage.objects enable row level security;
+    grant usage on schema storage to authenticated,anon;
+    grant select,insert,delete on storage.objects to authenticated,anon;`);
+  await db.exec(readFileSync(new URL("04-fotos-barbeiros.sql", base), "utf8"));
+  await db.exec(readFileSync(new URL("04-fotos-barbeiros.sql", base), "utf8"));
+
   for (const [id, email] of [
     [admin, "admin@example.com"],
     [barber, "barber@example.com"],
@@ -64,6 +74,97 @@ try {
         schedule,
       }),
     ]);
+  const photo = `${admin}/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg`;
+  const record = {
+    id: barber,
+    name: "Barbeiro A",
+    email: "barber@example.com",
+    active: 1,
+    services: ["corte", "corte-barba"],
+    schedule,
+  };
+  await ok(
+    "insert into storage.objects(bucket_id,name) values('barber-photos',$1)",
+    [photo],
+  );
+  await ok("select public.save_barber($1)", [
+    JSON.stringify({ ...record, photo_path: photo }),
+  ]);
+  await ok("select public.save_barber($1)", [JSON.stringify(record)]);
+  assert.equal(
+    (await ok("select photo_path from public.barbers where id=$1", [barber]))[0]
+      .photo_path,
+    photo,
+    "Old client retains the existing photo",
+  );
+  assert.equal(
+    (
+      await db.query("delete from storage.objects where name=$1 returning id", [
+        photo,
+      ])
+    ).rows.length,
+    0,
+    "Cannot delete a referenced photo",
+  );
+  await deny("select public.save_barber($1)", [
+    JSON.stringify({ ...record, photo_path: "https://foreign.example/a.jpg" }),
+  ]);
+  await deny("select public.save_barber($1)", [
+    JSON.stringify({
+      ...record,
+      photo_path: `${admin}/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.png`,
+    }),
+  ]);
+  await as(customer);
+  await deny(
+    "insert into storage.objects(bucket_id,name) values('barber-photos',$1)",
+    [photo],
+  );
+  await deny("select public.save_barber($1)", [
+    JSON.stringify({ ...record, photo_path: null }),
+  ]);
+  await as(barber);
+  await deny(
+    "insert into storage.objects(bucket_id,name) values('barber-photos',$1)",
+    [photo],
+  );
+  await as(null, "anon");
+  await deny(
+    "insert into storage.objects(bucket_id,name) values('barber-photos',$1)",
+    [photo],
+  );
+  const catalog = (await ok("select public.public_catalog() as c"))[0].c;
+  const publicBarber = catalog.barbers.find((b) => b.id === barber);
+  assert.equal(publicBarber.photo_path, photo);
+  assert.equal(publicBarber.email, undefined);
+  assert.equal(publicBarber.user_id, undefined);
+  await as(admin);
+  await ok("select public.save_barber($1)", [
+    JSON.stringify({ ...record, photo_path: null }),
+  ]);
+  assert.equal(
+    (await ok("select photo_path from public.barbers where id=$1", [barber]))[0]
+      .photo_path,
+    null,
+  );
+  assert.equal(
+    (
+      await db.query("delete from storage.objects where name=$1 returning id", [
+        photo,
+      ])
+    ).rows.length,
+    1,
+  );
+  await ok("select public.save_barber($1)", [
+    JSON.stringify({ ...record, active: 0 }),
+  ]);
+  assert.equal(
+    (await ok("select public.public_catalog() as c"))[0].c.barbers.some(
+      (b) => b.id === barber,
+    ),
+    false,
+  );
+  await ok("select public.save_barber($1)", [JSON.stringify(record)]);
   await as(null, "anon");
   assert.equal(
     (await ok("select public.public_catalog() as c"))[0].c.services.length,
@@ -107,6 +208,20 @@ try {
   assert.equal(booked.status, "confirmed");
   assert.equal(booked.end_min, 660);
   assert.equal(booked.price, 8000);
+  await db.exec("reset role");
+  await db.exec(readFileSync(new URL("04-fotos-barbeiros.sql", base), "utf8"));
+  const afterMigration = (
+    await ok("select to_jsonb(r) as r from public.reservations r where id=$1", [
+      booked.id,
+    ])
+  )[0].r;
+  assert.deepEqual(
+    afterMigration,
+    booked,
+    "Rerunning the photo migration preserves existing booking data",
+  );
+  await as(customer);
+
   assert.equal(
     (
       await ok(
@@ -203,7 +318,7 @@ try {
   console.log(
     "PASS",
     checks,
-    "SQL operations: schema, seed, RLS, privilege escalation, booking, overlap, replay, cancellation, staff separation, push queue and endpoints.",
+    "SQL operations: schema, seed, RLS, privilege escalation, booking, overlap, replay, cancellation, staff separation, push queue, endpoints, photo migration and Storage policies.",
   );
 } catch (e) {
   console.error("SQL TEST FAILURE:", e.message, e.detail, e.where);

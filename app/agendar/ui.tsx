@@ -1,4 +1,5 @@
 "use client";
+import BarberPhoto from "@/components/barber-photo";
 import { useEffect, useState, useRef } from "react";
 import {
   Scissors,
@@ -9,13 +10,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import { money, time, today, type Service, type Barber } from "@/lib/catalog";
 export default function Booking() {
   const [user, setUser] = useState<{ name: string; email: string } | null>(
@@ -63,6 +57,8 @@ export default function Booking() {
           setClientName(d.user?.name || "");
           const q = new URLSearchParams(window.location.search);
           setDate(q.get("date") || today());
+          if (d.barbers.some((x) => x.id === q.get("barber")))
+            setBarber(q.get("barber")!);
           if (d.services.some((x) => x.id === q.get("service"))) {
             setService(q.get("service")!);
             if (d.barbers.some((x) => x.id === q.get("barber"))) {
@@ -146,6 +142,15 @@ export default function Booking() {
       setSaving(false);
     }
   }
+  const stepHeading = useRef<HTMLHeadingElement>(null);
+  const previousStep = useRef(1);
+  useEffect(() => {
+    if (previousStep.current !== step) {
+      previousStep.current = step;
+      stepHeading.current?.focus({ preventScroll: true });
+      stepHeading.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    }
+  }, [step]);
   const selected = services.find((s) => s.id === service),
     professional = barbers.find((b) => b.id === barber),
     available = barbers.filter((b) =>
@@ -154,7 +159,16 @@ export default function Booking() {
   return (
     <div className="system">
       <header className="sys-header">
-        <a className="wordmark" href="/"><span className="official-logo"><img src="/logo-santo-corte.png" alt="Santo Corte Barbearia" width={1450} height={1088} /></span></a>
+        <a className="wordmark" href="/">
+          <span className="official-logo">
+            <img
+              src="/logo-santo-corte.png"
+              alt="Santo Corte Barbearia"
+              width={1450}
+              height={1088}
+            />
+          </span>
+        </a>
         <a href="/meus-agendamentos" className="quiet-link">
           Meus agendamentos ↗
         </a>
@@ -166,7 +180,9 @@ export default function Booking() {
           <br />
           <span>NO SEU HORÁRIO.</span>
         </h1>
-        <p className="intro">Escolha o cuidado que você procura.</p>
+        <p className="intro">
+          Escolha o serviço, encontre seu horário e confirme com Google.
+        </p>
         <ol className="progress-steps" aria-label="Etapas do agendamento">
           {["Serviço", "Profissional e horário", "Confirmação"].map((s, i) => (
             <li
@@ -197,36 +213,69 @@ export default function Booking() {
               <>
                 {step === 1 && (
                   <>
-                    <h2>01. Escolha seu serviço</h2>
+                    <h2 ref={stepHeading} tabIndex={-1}>
+                      01. Escolha seu serviço
+                    </h2>
+                    {professional && (
+                      <div className="selected-professional">
+                        <BarberPhoto
+                          name={professional.name}
+                          src={professional.photo_url}
+                        />
+                        <div>
+                          <small>Você escolheu</small>
+                          <strong>{professional.name}</strong>
+                        </div>
+                        <button
+                          className="mini-button"
+                          onClick={() => {
+                            setBarber("");
+                            setService("");
+                          }}
+                        >
+                          Trocar profissional
+                        </button>
+                      </div>
+                    )}
                     <RadioGroup
                       value={service}
                       onValueChange={(v) => {
                         setService(v);
-                        setBarber("");
+                        if (
+                          professional &&
+                          !JSON.parse(professional.service_ids).includes(v)
+                        )
+                          setBarber("");
                         setSlot(null);
                       }}
                       className="service-grid"
                       aria-label="Serviço"
                     >
-                      {services.map((s) => (
-                        <label
-                          className={
-                            "service-card " +
-                            (service === s.id ? "selected" : "")
-                          }
-                          key={s.id}
-                        >
-                          <div className="service-card-top">
-                            <Scissors size={24} />
-                            <RadioGroupItem value={s.id} id={s.id} />
-                          </div>
-                          <h3>{s.name}</h3>
-                          <p>
-                            <Clock size={14} /> {s.duration} min
-                          </p>
-                          <strong>{money(s)}</strong>
-                        </label>
-                      ))}
+                      {services
+                        .filter(
+                          (s) =>
+                            !professional ||
+                            JSON.parse(professional.service_ids).includes(s.id),
+                        )
+                        .map((s) => (
+                          <label
+                            className={
+                              "service-card " +
+                              (service === s.id ? "selected" : "")
+                            }
+                            key={s.id}
+                          >
+                            <div className="service-card-top">
+                              <Scissors size={24} />
+                              <RadioGroupItem value={s.id} id={s.id} />
+                            </div>
+                            <h3>{s.name}</h3>
+                            <p>
+                              <Clock size={14} /> {s.duration} min
+                            </p>
+                            <strong>{money(s)}</strong>
+                          </label>
+                        ))}
                     </RadioGroup>
                     <button
                       className="action"
@@ -243,7 +292,9 @@ export default function Booking() {
                 )}
                 {step === 2 && (
                   <>
-                    <h2>02. Profissional e horário</h2>
+                    <h2 ref={stepHeading} tabIndex={-1}>
+                      02. Profissional e horário
+                    </h2>
                     {!available.length ? (
                       <div className="empty-panel">
                         <Scissors size={32} />
@@ -260,19 +311,36 @@ export default function Booking() {
                       </div>
                     ) : (
                       <>
-                        <label className="field-label">Profissional</label>
-                        <Select value={barber} onValueChange={setBarber}>
-                          <SelectTrigger className="sys-select">
-                            <SelectValue placeholder="Escolha um profissional" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {available.map((b) => (
-                              <SelectItem value={b.id} key={b.id}>
+                        <p className="field-label">
+                          Com quem você quer marcar?
+                        </p>
+                        <RadioGroup
+                          value={barber}
+                          onValueChange={setBarber}
+                          className="professional-grid"
+                          aria-label="Escolha o profissional"
+                        >
+                          {available.map((b) => (
+                            <label
+                              key={b.id}
+                              className={`professional-option${barber === b.id ? " selected" : ""}`}
+                            >
+                              <BarberPhoto name={b.name} src={b.photo_url} />
+                              <span className="professional-option-name">
                                 {b.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                                <small>
+                                  {barber === b.id
+                                    ? "Selecionado"
+                                    : "Selecionar profissional"}
+                                </small>
+                              </span>
+                              <RadioGroupItem
+                                value={b.id}
+                                aria-label={b.name}
+                              />
+                            </label>
+                          ))}
+                        </RadioGroup>
                         <label className="field-label" htmlFor="date">
                           Data
                         </label>
@@ -283,9 +351,7 @@ export default function Booking() {
                           min={today()}
                           onChange={(e) => setDate(e.target.value)}
                         />
-                        <p className="fineprint">
-                          Horário de Brasília · America/Sao_Paulo
-                        </p>
+                        <p className="fineprint">Horário de Brasília</p>
                         {slotLoading ? (
                           <p role="status">Consultando horários…</p>
                         ) : (
@@ -343,8 +409,22 @@ export default function Booking() {
                 )}
                 {step === 3 && (
                   <>
-                    <h2>03. Confirme seu momento</h2>
+                    <h2 ref={stepHeading} tabIndex={-1}>
+                      03. Confirme seu momento
+                    </h2>
                     <div className="review-card">
+                      {professional && (
+                        <div className="review-professional">
+                          <BarberPhoto
+                            name={professional.name}
+                            src={professional.photo_url}
+                          />
+                          <span>
+                            Seu atendimento com{" "}
+                            <strong>{professional.name}</strong>
+                          </span>
+                        </div>
+                      )}
                       <h3>{selected?.name}</h3>
                       <p>
                         {professional?.name} ·{" "}
@@ -476,7 +556,13 @@ export default function Booking() {
               {professional && (
                 <div>
                   <dt>Profissional</dt>
-                  <dd>{professional.name}</dd>
+                  <dd className="summary-professional">
+                    <BarberPhoto
+                      name={professional.name}
+                      src={professional.photo_url}
+                    />
+                    {professional.name}
+                  </dd>
                 </div>
               )}
               {slot !== null && (

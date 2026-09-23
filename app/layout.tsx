@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./landing.css";
 import "./system.css";
+import "./refinements.css";
 export const viewport = { themeColor: "#000000" };
 export const metadata: Metadata = {
   title: "Santo Corte | Barbearia e agendamentos",

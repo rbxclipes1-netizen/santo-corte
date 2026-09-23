@@ -1,3 +1,4 @@
+import { photoURL } from "./photos";
 import { supabaseServer } from "./supabase/server";
 export class HttpError extends Error {
   constructor(
@@ -88,6 +89,7 @@ export function dbError(error: { code?: string; message: string } | null) {
 }
 export const normalizeBarber = (b: any) => ({
   ...b,
+  photo_url: photoURL(b.photo_path),
   active: b.active ? 1 : 0,
   service_ids: JSON.stringify(b.service_ids),
   schedule: JSON.stringify(b.schedule),

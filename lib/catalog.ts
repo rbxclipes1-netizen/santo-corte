@@ -9,6 +9,8 @@ export type Service = {
 };
 export type Shift = { open: number; close: number; enabled: boolean };
 export type Barber = {
+  photo_path?: string | null;
+  photo_url?: string | null;
   id: string;
   name: string;
   email?: string;

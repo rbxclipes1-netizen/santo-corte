@@ -1,5 +1,9 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import BarberPhoto from "@/components/barber-photo";
+import PhotoEditor from "@/components/photo-editor";
+import { PHOTO_BUCKET, PHOTO_LIMIT, photoURL } from "@/lib/photos";
+import { supabaseBrowser } from "@/lib/supabase/client";
 import Notifications from "./notifications";
 import Logout from "@/app/logout-button";
 import {
@@ -117,6 +121,7 @@ const newService: Service = {
   note: "",
 };
 const freshBarber = () => ({
+  photo_path: null as string | null,
   id: "",
   name: "",
   email: "",
@@ -143,6 +148,11 @@ export default function Dashboard({ owner }: { owner: boolean }) {
     [duration, setDuration] = useState(60),
     [client, setClient] = useState(""),
     [phone, setPhone] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoChecking, setPhotoChecking] = useState(false);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState("");
+  const photoLock = useRef(false);
   const requestKey = useRef("");
   const sequence = useRef(0);
   const refresh = useCallback(async () => {
@@ -194,6 +204,84 @@ export default function Dashboard({ owner }: { owner: boolean }) {
       setBusy(false);
     }
   }
+  function editBarber(next: ReturnType<typeof freshBarber> | null) {
+    if (photoLock.current || photoChecking) return;
+    setPhotoFile(null);
+    setPhotoError("");
+    setBarber(next);
+  }
+  async function saveBarber() {
+    if (!barber || photoLock.current || busy || photoChecking) return;
+    photoLock.current = true;
+    setPhotoBusy(true);
+    setPhotoError("");
+    let uploaded: string | null = null;
+    try {
+      const client = supabaseBrowser();
+      const originalPath =
+        data?.barbers.find((b) => b.id === barber.id)?.photo_path || null;
+      let path = barber.photo_path;
+      if (photoFile) {
+        const extensions: Record<string, string> = {
+          "image/jpeg": "jpg",
+          "image/png": "png",
+          "image/webp": "webp",
+        };
+        const ext = extensions[photoFile.type];
+        if (!ext || photoFile.size > PHOTO_LIMIT)
+          throw Error("Use JPG, PNG ou WebP com até 5 MB.");
+        const {
+          data: { user },
+          error: authError,
+        } = await client.auth.getUser();
+        if (authError || !user)
+          throw Error(
+            "Sua sessão expirou. Entre novamente para enviar a foto.",
+          );
+        path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await client.storage
+          .from(PHOTO_BUCKET)
+          .upload(path, photoFile, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: photoFile.type,
+          });
+        if (uploadError)
+          throw Error(
+            "Não foi possível enviar a foto. Confira a conexão e se a atualização de fotos foi configurada no Supabase.",
+          );
+        uploaded = path;
+      }
+      if (
+        await send(
+          { action: "barber", barber: { ...barber, photo_path: path } },
+          "Profissional salvo.",
+        )
+      ) {
+        if (originalPath && originalPath !== path)
+          await client.storage
+            .from(PHOTO_BUCKET)
+            .remove([originalPath])
+            .catch(() => {});
+        setBarber(null);
+        setPhotoFile(null);
+      } else {
+        if (uploaded)
+          await client.storage
+            .from(PHOTO_BUCKET)
+            .remove([uploaded])
+            .catch(() => {});
+        setPhotoError(
+          "O cadastro não foi salvo. Confira a mensagem acima e tente novamente.",
+        );
+      }
+    } catch (e) {
+      setPhotoError((e as Error).message);
+    } finally {
+      photoLock.current = false;
+      setPhotoBusy(false);
+    }
+  }
   useEffect(() => {
     requestKey.current = crypto.randomUUID();
   }, [
@@ -221,7 +309,16 @@ export default function Dashboard({ owner }: { owner: boolean }) {
   return (
     <div className="system">
       <header className="sys-header">
-        <a className="wordmark" href="/"><span className="official-logo"><img src="/logo-santo-corte.png" alt="Santo Corte Barbearia" width={1450} height={1088} /></span></a>
+        <a className="wordmark" href="/">
+          <span className="official-logo">
+            <img
+              src="/logo-santo-corte.png"
+              alt="Santo Corte Barbearia"
+              width={1450}
+              height={1088}
+            />
+          </span>
+        </a>
         <div className="action-row" style={{ margin: 0 }}>
           <a href="/agendar" className="quiet-link">
             Ver agendamento <ArrowUpRight size={16} />
@@ -761,7 +858,7 @@ export default function Dashboard({ owner }: { owner: boolean }) {
                 <button
                   className="action"
                   disabled={!services.length}
-                  onClick={() => setBarber(freshBarber())}
+                  onClick={() => editBarber(freshBarber())}
                 >
                   <Plus size={18} /> Novo profissional
                 </button>
@@ -777,152 +874,173 @@ export default function Dashboard({ owner }: { owner: boolean }) {
                   className="editor"
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    if (
-                      await send(
-                        { action: "barber", barber },
-                        "Profissional salvo.",
-                      )
-                    )
-                      setBarber(null);
+                    await saveBarber();
                   }}
                 >
                   <h2>
                     {barber.id ? "Editar profissional" : "Novo profissional"}
                   </h2>
-                  <div className="form-grid">
-                    <label>
-                      Nome
-                      <input
-                        required
-                        minLength={2}
-                        maxLength={80}
-                        value={barber.name}
-                        onChange={(e) =>
-                          setBarber({ ...barber, name: e.target.value })
-                        }
-                      />
-                    </label>
-                    <label>
-                      E-mail de acesso
-                      <input
-                        type="email"
-                        required
-                        value={barber.email}
-                        onChange={(e) =>
-                          setBarber({ ...barber, email: e.target.value })
-                        }
-                      />
-                    </label>
-                  </div>
-                  <p className="fineprint">
-                    O profissional deve entrar com Google usando este e-mail.
-                    Ele verá apenas sua própria agenda.
-                  </p>
-                  <Toggle
-                    checked={!!barber.active}
-                    onChange={(v) =>
-                      setBarber({ ...barber, active: v ? 1 : 0 })
-                    }
-                    label="Profissional ativo"
-                  />
-                  <h3>Serviços atendidos</h3>
-                  <div className="checks">
-                    {services
-                      .filter((s) => s.active)
-                      .map((s) => (
-                        <Toggle
-                          key={s.id}
-                          label={s.name}
-                          checked={barber.services.includes(s.id)}
-                          onChange={(v) =>
-                            setBarber({
-                              ...barber,
-                              services: v
-                                ? [...barber.services, s.id]
-                                : barber.services.filter((id) => id !== s.id),
-                            })
+                  <fieldset
+                    className="barber-fields"
+                    disabled={busy || photoBusy}
+                  >
+                    <PhotoEditor
+                      onChecking={setPhotoChecking}
+                      name={barber.name}
+                      src={photoURL(barber.photo_path)}
+                      file={photoFile}
+                      onFile={setPhotoFile}
+                      onRemove={() => {
+                        setPhotoFile(null);
+                        setBarber({ ...barber, photo_path: null });
+                      }}
+                      disabled={busy || photoBusy}
+                    />
+                    {photoError && (
+                      <p className="notice error" role="alert">
+                        {photoError}
+                      </p>
+                    )}
+                    <div className="form-grid">
+                      <label>
+                        Nome
+                        <input
+                          required
+                          minLength={2}
+                          maxLength={80}
+                          value={barber.name}
+                          onChange={(e) =>
+                            setBarber({ ...barber, name: e.target.value })
                           }
                         />
+                      </label>
+                      <label>
+                        E-mail de acesso
+                        <input
+                          type="email"
+                          required
+                          value={barber.email}
+                          onChange={(e) =>
+                            setBarber({ ...barber, email: e.target.value })
+                          }
+                        />
+                      </label>
+                    </div>
+                    <p className="fineprint">
+                      O profissional deve entrar com Google usando este e-mail.
+                      Ele verá apenas sua própria agenda.
+                    </p>
+                    <Toggle
+                      checked={!!barber.active}
+                      onChange={(v) =>
+                        setBarber({ ...barber, active: v ? 1 : 0 })
+                      }
+                      label="Profissional ativo"
+                    />
+                    <h3>Serviços atendidos</h3>
+                    <div className="checks">
+                      {services
+                        .filter((s) => s.active)
+                        .map((s) => (
+                          <Toggle
+                            key={s.id}
+                            label={s.name}
+                            checked={barber.services.includes(s.id)}
+                            onChange={(v) =>
+                              setBarber({
+                                ...barber,
+                                services: v
+                                  ? [...barber.services, s.id]
+                                  : barber.services.filter((id) => id !== s.id),
+                              })
+                            }
+                          />
+                        ))}
+                    </div>
+                    <h3>Expediente semanal</h3>
+                    <p className="fineprint">
+                      Horário de Brasília. Para almoço, férias ou folgas
+                      pontuais, adicione um bloqueio na agenda.
+                    </p>
+                    <div className="shift-list">
+                      {[
+                        "Domingo",
+                        "Segunda",
+                        "Terça",
+                        "Quarta",
+                        "Quinta",
+                        "Sexta",
+                        "Sábado",
+                      ].map((day, i) => (
+                        <div key={day}>
+                          <Toggle
+                            checked={barber.schedule[i].enabled}
+                            label={day}
+                            onChange={(v) =>
+                              setBarber({
+                                ...barber,
+                                schedule: barber.schedule.map((s, j) =>
+                                  j === i ? { ...s, enabled: v } : s,
+                                ),
+                              })
+                            }
+                          />
+                          <input
+                            aria-label={"Início " + day}
+                            type="time"
+                            step="900"
+                            disabled={!barber.schedule[i].enabled}
+                            value={time(barber.schedule[i].open)}
+                            onChange={(e) =>
+                              setBarber({
+                                ...barber,
+                                schedule: barber.schedule.map((s, j) =>
+                                  j === i
+                                    ? { ...s, open: minute(e.target.value) }
+                                    : s,
+                                ),
+                              })
+                            }
+                          />
+                          <span>até</span>
+                          <input
+                            aria-label={"Fim " + day}
+                            type="time"
+                            step="900"
+                            disabled={!barber.schedule[i].enabled}
+                            value={time(barber.schedule[i].close)}
+                            onChange={(e) =>
+                              setBarber({
+                                ...barber,
+                                schedule: barber.schedule.map((s, j) =>
+                                  j === i
+                                    ? { ...s, close: minute(e.target.value) }
+                                    : s,
+                                ),
+                              })
+                            }
+                          />
+                        </div>
                       ))}
-                  </div>
-                  <h3>Expediente semanal</h3>
-                  <p className="fineprint">
-                    Horário de Brasília. Para almoço, férias ou folgas pontuais,
-                    adicione um bloqueio na agenda.
-                  </p>
-                  <div className="shift-list">
-                    {[
-                      "Domingo",
-                      "Segunda",
-                      "Terça",
-                      "Quarta",
-                      "Quinta",
-                      "Sexta",
-                      "Sábado",
-                    ].map((day, i) => (
-                      <div key={day}>
-                        <Toggle
-                          checked={barber.schedule[i].enabled}
-                          label={day}
-                          onChange={(v) =>
-                            setBarber({
-                              ...barber,
-                              schedule: barber.schedule.map((s, j) =>
-                                j === i ? { ...s, enabled: v } : s,
-                              ),
-                            })
-                          }
-                        />
-                        <input
-                          aria-label={"Início " + day}
-                          type="time"
-                          step="900"
-                          disabled={!barber.schedule[i].enabled}
-                          value={time(barber.schedule[i].open)}
-                          onChange={(e) =>
-                            setBarber({
-                              ...barber,
-                              schedule: barber.schedule.map((s, j) =>
-                                j === i
-                                  ? { ...s, open: minute(e.target.value) }
-                                  : s,
-                              ),
-                            })
-                          }
-                        />
-                        <span>até</span>
-                        <input
-                          aria-label={"Fim " + day}
-                          type="time"
-                          step="900"
-                          disabled={!barber.schedule[i].enabled}
-                          value={time(barber.schedule[i].close)}
-                          onChange={(e) =>
-                            setBarber({
-                              ...barber,
-                              schedule: barber.schedule.map((s, j) =>
-                                j === i
-                                  ? { ...s, close: minute(e.target.value) }
-                                  : s,
-                              ),
-                            })
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="action-row">
-                    <button className="action" disabled={busy}>
-                      Salvar profissional
-                    </button>
-                    <button
-                      className="action secondary"
-                      type="button"
-                      onClick={() => setBarber(null)}
-                    >
-                      Fechar
-                    </button>
-                  </div>
+                    </div>
+                    <div className="action-row">
+                      <button
+                        className="action"
+                        disabled={busy || photoBusy || photoChecking}
+                      >
+                        {photoBusy
+                          ? "Salvando profissional…"
+                          : "Salvar profissional"}
+                      </button>
+                      <button
+                        className="action secondary"
+                        type="button"
+                        onClick={() => editBarber(null)}
+                      >
+                        Fechar
+                      </button>
+                    </div>
+                  </fieldset>
                 </form>
               )}
               {!barbers.length && !barber ? (
@@ -938,14 +1056,7 @@ export default function Dashboard({ owner }: { owner: boolean }) {
                 <div className="admin-service-grid">
                   {barbers.map((b) => (
                     <article key={b.id}>
-                      <div className="avatar">
-                        {b.name
-                          .trim()
-                          .split(" ")
-                          .map((x) => x[0])
-                          .slice(0, 2)
-                          .join("")}
-                      </div>
+                      <BarberPhoto name={b.name} src={b.photo_url} />
                       <h3>{b.name}</h3>
                       <p>{b.email}</p>
                       <span className="badge">
@@ -955,7 +1066,8 @@ export default function Dashboard({ owner }: { owner: boolean }) {
                       <button
                         className="mini-button"
                         onClick={() =>
-                          setBarber({
+                          editBarber({
+                            photo_path: b.photo_path || null,
                             id: b.id,
                             name: b.name,
                             email: b.email || "",
