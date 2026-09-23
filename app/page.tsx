@@ -1,280 +1,355 @@
-import TeamShowcase from "@/components/team-showcase";
+import {
+  ArrowUpRight,
+  Scissors,
+  Clock3,
+  MapPin,
+  Phone,
+  UserRound,
+  Wifi,
+  CreditCard,
+  Check,
+  Menu,
+} from "lucide-react";
+import HomeCatalog from "@/components/home-catalog";
+import "./home-premium.css";
+
+const mapQuery = "Santo Corte Barbearia Avenida Galileia 496 Ipatinga MG";
+function Logo() {
+  return (
+    <span className="official-logo">
+      <img
+        src="/logo-santo-corte.png"
+        alt="Santo Corte Barbearia"
+        width={1450}
+        height={1088}
+      />
+    </span>
+  );
+}
+const links = [
+  ["#inicio", "Início"],
+  ["#servicos", "Serviços"],
+  ["#equipe", "Equipe"],
+  ["#essencia", "A barbearia"],
+  ["#visite", "Localização"],
+];
 export default function Home() {
   return (
-    <div className="landing">
+    <div className="sc-home">
       <a className="skip" href="#conteudo">
         Ir para o conteúdo
       </a>
-      <header className="header">
-        <a className="brand" href="#inicio" aria-label="Santo Corte, início">
-          <span className="official-logo">
-            <img
-              src="/logo-santo-corte.png"
-              alt="Santo Corte Barbearia"
-              width="1450"
-              height="1088"
-            />
-          </span>
-        </a>
-        <nav aria-label="Menu principal">
-          <a href="#essencia">A barbearia</a>
-          <a href="#equipe">Equipe</a>
-          <a href="/agendar">Agendamento</a>
-          <a href="#visite">Onde estamos</a>
-        </nav>
-        <a className="button small" href="/agendar">
-          AGENDAR HORÁRIO <span>↗</span>
-        </a>
+      <header className="sc-header">
+        <div className="sc-container sc-header-inner">
+          <a
+            className="sc-brand"
+            href="#inicio"
+            aria-label="Santo Corte, início"
+          >
+            <Logo />
+          </a>
+          <nav className="sc-desktop-nav" aria-label="Menu principal">
+            {links.map(([url, name]) => (
+              <a href={url} key={url}>
+                {name}
+              </a>
+            ))}
+          </nav>
+          <div className="sc-header-actions">
+            <a
+              className="sc-btn sc-btn-secondary sc-client"
+              href="/meus-agendamentos"
+            >
+              <UserRound size={15} aria-hidden="true" /> Área do cliente
+            </a>
+            <a className="sc-btn" href="/agendar">
+              Agendar horário
+            </a>
+          </div>
+          <details className="sc-mobile-menu">
+            <summary aria-label="Abrir menu de navegação">
+              <Menu size={22} />
+            </summary>
+            <nav aria-label="Menu móvel">
+              {links.map(([url, name]) => (
+                <a href={url} key={url}>
+                  {name}
+                </a>
+              ))}
+              <a href="/meus-agendamentos">Área do cliente</a>
+              <a href="/painel">Área da equipe</a>
+            </nav>
+          </details>
+        </div>
       </header>
-      <nav className="mobile-quick-nav" aria-label="Acesso rápido">
-        <a href="#equipe">Nossa equipe</a>
-        <a href="/agendar">Agendar horário ↗</a>
-        <a href="/meus-agendamentos">Meus horários</a>
-      </nav>
       <main id="conteudo">
-        <section className="hero" id="inicio">
-          <div
-            className="hero-photo"
-            role="img"
-            aria-label="Imagem ilustrativa de cuidado com cabelo em uma barbearia"
-          ></div>
-          <div className="hero-shade"></div>
-          <div className="hero-content">
-            <div className="eyebrow">
-              <span></span> CANAÃ · IPATINGA, MG
-            </div>
-            <h1>
-              SEU ESTILO.
+        <section className="sc-hero" id="inicio" aria-labelledby="hero-title">
+          <div className="sc-hero-backdrop" />
+          <div className="sc-container sc-hero-inner">
+            <span className="sc-pill">
+              <Scissors size={14} aria-hidden="true" /> BARBEARIA EM CANAÃ ·
+              IPATINGA, MG
+            </span>
+            <h1 id="hero-title">
+              SEU ESTILO. SEU MOMENTO.
               <br />
-              SEU MOMENTO.
-              <br />
-              <em>SANTO CORTE.</em>
+              <span>SANTO CORTE.</span>
             </h1>
             <p>
-              Uma pausa na rotina.
+              Uma pausa na rotina. Um novo olhar no espelho.
               <br />
-              Um novo olhar no espelho.
+              Escolha seu profissional e reserve seu próximo cuidado com a Santo
+              Corte.
             </p>
-            <a className="button" href="/agendar">
-              RESERVE SEU HORÁRIO <span>↗</span>
-            </a>
-            <div className="rating">
-              <span className="stars" aria-label="5 estrelas">
-                ★★★★★
-              </span>
-              <span>
-                <strong>5,0</strong> no Trinks <i>·</i> 13 avaliações
-              </span>
+            <div className="sc-hero-actions">
+              <a className="sc-btn sc-btn-lg" href="/agendar">
+                <Scissors size={18} aria-hidden="true" /> AGENDAR HORÁRIO ONLINE
+              </a>
+              <a className="sc-btn sc-btn-lg sc-btn-secondary" href="#servicos">
+                Ver serviços e valores
+              </a>
             </div>
+            <ul className="sc-benefits">
+              <li>
+                <Clock3 size={16} /> Horário marcado
+              </li>
+              <li>
+                <UserRound size={16} /> Adulto e infantil
+              </li>
+              <li>
+                <Wifi size={16} /> Wi-Fi no ambiente
+              </li>
+              <li>
+                <CreditCard size={16} /> Pix, débito e crédito
+              </li>
+            </ul>
           </div>
-          <div className="hero-bottom">
-            <span>BARBEARIA MASCULINA · ADULTO & INFANTIL</span>
-            <a href="#essencia">
-              CONHEÇA A SANTO CORTE <span>↓</span>
-            </a>
-          </div>
-          <span className="photo-note">Imagem ilustrativa</span>
+          <span className="sc-photo-note">Imagem ilustrativa</span>
         </section>
-        <div className="ribbon" aria-hidden="true">
-          <span>ESTILO TEM PRESENÇA</span>
-          <b>✦</b>
-          <span>SEU TEMPO TEM VALOR</span>
-          <b>✦</b>
-          <span>SANTO CORTE BARBEARIA</span>
-          <b>✦</b>
+        <div className="sc-container">
+          <aside className="sc-callout">
+            <div>
+              <span className="sc-kicker">SEU PRÓXIMO HORÁRIO</span>
+              <h2>Seu cuidado começa com uma escolha.</h2>
+              <p>
+                Consulte os serviços, escolha seu barbeiro e encontre o melhor
+                horário para você.
+              </p>
+            </div>
+            <a className="sc-btn" href="/agendar">
+              Escolher meu horário <ArrowUpRight size={17} />
+            </a>
+          </aside>
         </div>
-        <section className="essence section" id="essencia">
+        <section
+          className="sc-section sc-container sc-about"
+          id="essencia"
+          aria-labelledby="about-title"
+        >
           <div>
-            <div className="eyebrow">01 / A SANTO CORTE</div>
-            <h2>
-              MAIS DO QUE
+            <span className="sc-kicker">SANTO CORTE BARBEARIA</span>
+            <h2 id="about-title">
+              Mais do que um horário.
               <br />
-              UM HORÁRIO.
-              <br />
-              <span>UM TEMPO SEU.</span>
+              <span>Um tempo seu.</span>
             </h2>
-          </div>
-          <div className="essence-copy">
-            <p className="lead">
-              No coração do Canaã,
-              <br />
-              um lugar para cuidar do seu visual.
+            <p className="sc-lead">
+              No coração do Canaã, um lugar para cuidar do seu visual.
             </p>
             <p>
               A Santo Corte recebe adultos e crianças em Ipatinga. Escolha seu
               horário e venha fazer do cuidado pessoal parte da sua rotina.
             </p>
-            <div className="amenities">
-              <span>Wi-Fi</span>
-              <span>Ambiente com TV</span>
-              <span>Acessibilidade</span>
-              <span>Adulto e infantil</span>
-            </div>
-            <a className="text-link" href="#visite">
-              VENHA NOS CONHECER <span>↗</span>
+            <ul className="sc-amenities">
+              <li>
+                <Check size={16} /> Adulto e infantil
+              </li>
+              <li>
+                <Check size={16} /> Acessibilidade
+              </li>
+              <li>
+                <Check size={16} /> Ambiente com TV
+              </li>
+              <li>
+                <Check size={16} /> Wi-Fi
+              </li>
+            </ul>
+            <a className="sc-inline-link" href="#visite">
+              Venha nos conhecer <ArrowUpRight size={16} />
             </a>
           </div>
-        </section>
-        <TeamShowcase />
-        <section className="booking section" id="agendamento">
-          <div className="booking-top">
+          <div className="sc-about-visual">
+            <Logo />
             <div>
-              <div className="eyebrow">02 / SEU PRÓXIMO HORÁRIO</div>
-              <h2>
-                O PRÓXIMO PASSO
-                <br />É <span>SE CUIDAR.</span>
-              </h2>
+              <span className="sc-kicker">CANAÃ · IPATINGA</span>
+              <h3>Seu estilo tem presença.</h3>
+              <p>Avenida Galiléia, 496</p>
             </div>
-            <p>
-              Consulte os serviços, escolha o profissional
-              <br className="desktop" /> e encontre o melhor horário para você.
-            </p>
-          </div>
-          <div className="steps">
-            <article>
-              <span className="step-no">01</span>
-              <h3>Escolha seu serviço</h3>
-              <p>
-                Veja as opções e os valores atualizados na nossa página de
-                agendamento.
-              </p>
-            </article>
-            <article>
-              <span className="step-no">02</span>
-              <h3>Encontre seu horário</h3>
-              <p>
-                Consulte a disponibilidade e escolha o momento que combina com
-                sua rotina.
-              </p>
-            </article>
-            <article>
-              <span className="step-no">03</span>
-              <h3>Nos vemos na cadeira</h3>
-              <p>
-                Confirme sua reserva aqui no site. A gente se encontra na Santo
-                Corte.
-              </p>
-            </article>
-          </div>
-          <div className="booking-action">
-            <a className="button" href="/agendar">
-              VER SERVIÇOS E AGENDAR <span>↗</span>
-            </a>
-            <span>Agendamento online na Santo Corte</span>
           </div>
         </section>
-        <section className="reputation">
-          <div className="reputation-score">
-            5,0
-            <span className="stars" aria-label="5 estrelas">
-              ★★★★★
+        <HomeCatalog />
+        <section className="sc-section sc-process">
+          <div className="sc-container">
+            <div className="sc-section-heading sc-centered">
+              <span className="sc-kicker">SIMPLES, DO INÍCIO AO FIM</span>
+              <h2>Seu próximo momento, em três passos.</h2>
+              <p>
+                Faça sua reserva aqui no site e acompanhe em Meus agendamentos.
+              </p>
+            </div>
+            <div className="sc-process-grid">
+              {[
+                [
+                  "01",
+                  "Escolha o serviço",
+                  "Consulte os valores e escolha o cuidado que você procura.",
+                ],
+                [
+                  "02",
+                  "Encontre seu horário",
+                  "Selecione o profissional, o dia e um dos horários disponíveis.",
+                ],
+                [
+                  "03",
+                  "Confirme sua reserva",
+                  "Entre com Google, confira os dados e confirme seu agendamento.",
+                ],
+              ].map(([n, title, copy]) => (
+                <article key={n}>
+                  <span>{n}</span>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+        <section
+          className="sc-section sc-container sc-visit"
+          id="visite"
+          aria-labelledby="visit-title"
+        >
+          <div>
+            <span className="sc-kicker">VENHA NOS VISITAR</span>
+            <h2 id="visit-title">
+              Seu destino.
+              <br />
+              <span>Canaã, Ipatinga.</span>
+            </h2>
+            <p>
+              Estamos esperando você na Santo Corte. Confira nosso endereço e
+              planeje sua visita.
+            </p>
+            <div className="sc-contact-list">
+              <div>
+                <MapPin />
+                <div>
+                  <h3>Nosso endereço</h3>
+                  <address>
+                    Avenida Galiléia, 496 · Loja
+                    <br />
+                    Canaã · Ipatinga, MG · CEP 35164-165
+                  </address>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Traçar rota ↗
+                  </a>
+                </div>
+              </div>
+              <div>
+                <Clock3 />
+                <div>
+                  <h3>Horário de funcionamento</h3>
+                  <p>
+                    Segunda a sexta: 08h30 às 19h30
+                    <br />
+                    Sábado: 08h às 18h · Domingo: fechado
+                  </p>
+                </div>
+              </div>
+              <div>
+                <Phone />
+                <div>
+                  <h3>Fale com a barbearia</h3>
+                  <a href="tel:+5531988871987">(31) 98887-1987</a>
+                  <br />
+                  <a href="tel:+553138258926">(31) 3825-8926</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="sc-map">
+            <iframe
+              title="Localização da Santo Corte em Canaã, Ipatinga"
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            <a
+              className="sc-inline-link"
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Abrir endereço no Google Maps <ArrowUpRight size={16} />
+            </a>
+          </div>
+        </section>
+        <div className="sc-container sc-policy">
+          <Clock3 size={18} aria-hidden="true" />
+          <p>
+            Precisou desmarcar? Avise com antecedência. A tolerância para
+            atrasos é de 10 minutos.
+          </p>
+        </div>
+      </main>
+      <footer className="sc-footer">
+        <div className="sc-container sc-footer-grid">
+          <div className="sc-footer-brand">
+            <a href="#inicio" aria-label="Santo Corte, início">
+              <Logo />
+            </a>
+            <p>
+              Seu estilo. Seu momento.
+              <br />
+              Cuidado com o visual para adultos e crianças em Canaã, Ipatinga.
+            </p>
+            <small>© {new Date().getFullYear()} Santo Corte Barbearia.</small>
+          </div>
+          <div>
+            <h2>Horários</h2>
+            <p>Segunda a sexta: 08h30 às 19h30</p>
+            <p>Sábado: 08h às 18h</p>
+            <p>Domingo: fechado</p>
+            <span className="sc-footer-note">
+              Crédito, débito, Pix, dinheiro e transferência.
             </span>
           </div>
           <div>
-            <div className="eyebrow">QUEM SENTA NA CADEIRA, AVALIA.</div>
-            <h2>
-              A CONFIANÇA COMEÇA
-              <br />
-              COM QUEM JÁ VEIO.
-            </h2>
-            <a className="text-link" href="/agendar">
-              VER SERVIÇOS E HORÁRIOS <span>↗</span>
-            </a>
+            <h2>Links rápidos</h2>
+            <nav aria-label="Links do rodapé">
+              {links.map(([url, name]) => (
+                <a href={url} key={url}>
+                  {name}
+                </a>
+              ))}
+            </nav>
           </div>
-        </section>
-        <section className="visit section" id="visite">
           <div>
-            <div className="eyebrow">03 / ENCONTRE A SANTO CORTE</div>
-            <h2>
-              SEU DESTINO.
-              <br />
-              <span>CANAÃ, IPATINGA.</span>
-            </h2>
-            <address>
-              Avenida Galiléia, 496 · Loja
-              <br />
-              Canaã · Ipatinga, MG
-              <br />
-              CEP 35164-165
-            </address>
-            <a
-              className="text-link"
-              href="https://www.google.com/maps/search/?api=1&query=Santo+Corte+Barbearia+Avenida+Galileia+496+Ipatinga"
-              target="_blank"
-              rel="noopener"
-            >
-              TRAÇAR ROTA NO MAPA <span>↗</span>
+            <h2>Acessos</h2>
+            <div className="sc-footer-access">
+              <a href="/meus-agendamentos">Área do cliente</a>
+              <a href="/painel">Painel da equipe</a>
+            </div>
+            <p>Gerencie seus horários em um só lugar.</p>
+            <a className="sc-inline-link" href="/agendar">
+              Fazer agendamento <ArrowUpRight size={14} />
             </a>
           </div>
-          <div className="visit-details">
-            <div className="detail-title">PORTAS ABERTAS PARA VOCÊ</div>
-            <dl className="hours">
-              <div>
-                <dt>Segunda a sexta</dt>
-                <dd>08h30 — 19h30</dd>
-              </div>
-              <div>
-                <dt>Sábado</dt>
-                <dd>08h00 — 18h00</dd>
-              </div>
-              <div>
-                <dt>Domingo</dt>
-                <dd>Fechado</dd>
-              </div>
-            </dl>
-            <div className="contact">
-              <span>FALE COM A BARBEARIA</span>
-              <a href="tel:+5531988871987">(31) 98887-1987 ↗</a>
-              <a href="tel:+553138258926">(31) 3825-8926 ↗</a>
-            </div>
-            <p className="payment">
-              Aceitamos crédito, débito, Pix, dinheiro e transferência.
-            </p>
-          </div>
-        </section>
-        <div className="policy">
-          <span>UM CUIDADO COM O SEU HORÁRIO</span>
-          <p>
-            Precisou desmarcar? Avise com antecedência.
-            <br />A tolerância para atrasos é de 10 minutos.
-          </p>
         </div>
-        <section className="closing">
-          <span className="official-logo">
-            <img
-              src="/logo-santo-corte.png"
-              alt="Santo Corte Barbearia"
-              width="1450"
-              height="1088"
-            />
-          </span>
-          <div className="eyebrow">A GENTE SE VÊ NA SANTO CORTE.</div>
-          <h2>
-            MARQUE SEU
-            <br />
-            <span>PRÓXIMO MOMENTO.</span>
-          </h2>
-          <a className="button" href="/agendar">
-            AGENDAR MEU HORÁRIO <span>↗</span>
-          </a>
-        </section>
-      </main>
-      <footer>
-        <a className="footer-brand" href="#inicio">
-          <span className="official-logo">
-            <img
-              src="/logo-santo-corte.png"
-              alt="Santo Corte Barbearia"
-              width="1450"
-              height="1088"
-            />
-          </span>
-        </a>
-        <p>Canaã, Ipatinga · MG</p>
-        <span>
-          © <span id="year">2026</span> Santo Corte Barbearia
-        </span>
-        <a href="/painel">Área da equipe ↗</a>
       </footer>
     </div>
   );
