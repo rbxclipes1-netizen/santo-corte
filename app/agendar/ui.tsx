@@ -590,7 +590,7 @@ export default function Booking() {
         </div>
       </main>
       <footer className="sys-footer">
-        Santo Corte Barbearia <a href="/painel">Área da equipe ↗</a>
+        Santo Corte Barbearia
       </footer>
     </div>
   );

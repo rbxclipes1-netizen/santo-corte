@@ -77,7 +77,6 @@ export default function Home() {
                 </a>
               ))}
               <a href="/meus-agendamentos">Área do cliente</a>
-              <a href="/painel">Área da equipe</a>
             </nav>
           </details>
         </div>
@@ -124,7 +123,6 @@ export default function Home() {
               </li>
             </ul>
           </div>
-          <span className="sc-photo-note">Imagem ilustrativa</span>
         </section>
         <div className="sc-container">
           <aside className="sc-callout">
@@ -342,7 +340,6 @@ export default function Home() {
             <h2>Acessos</h2>
             <div className="sc-footer-access">
               <a href="/meus-agendamentos">Área do cliente</a>
-              <a href="/painel">Painel da equipe</a>
             </div>
             <p>Gerencie seus horários em um só lugar.</p>
             <a className="sc-inline-link" href="/agendar">
