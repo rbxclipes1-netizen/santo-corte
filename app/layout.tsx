@@ -14,7 +14,10 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Santo Corte",
   },
-  icons: { icon: "/favicon.svg", apple: "/icons/apple-touch-icon.png" },
+  icons: {
+    icon: "/favicon.svg",
+    apple: [{ url: "/icons/apple-touch-santo-corte-v2.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 export default function RootLayout({
   children,
